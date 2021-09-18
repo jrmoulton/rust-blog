@@ -868,8 +868,8 @@ impl Subtrait for SomeType {}
 fn main() {
     SomeType.method(); // ❌ ambiguous method call
     // must disambiguate using fully-qualified syntax
-    <SomeType as Supertrait>::method(&st); // ✅ prints "in supertrait"
-    <SomeType as Subtrait>::method(&st); // ✅ prints "in subtrait"
+    <SomeType as Supertrait>::method(&SomeType); // ✅ prints "in supertrait"
+    <SomeType as Subtrait>::method(&SomeType); // ✅ prints "in subtrait"
 }
 ```
 
@@ -1422,7 +1422,7 @@ impl Clone for SomeType {
 }
 ```
 
-`Clone` can also be useful in constructing instances of a type within a generic context. Here's an example from the previous section except using `Clone` instead of `Default`:
+`Clone` can also be useful in constructing instances of a type within a generic context. Here's a modified example from the previous section except using `Clone` instead of `Default`:
 
 ```rust
 fn guarantee_length<T: Clone>(mut vec: Vec<T>, min_len: usize, fill_with: &T) -> Vec<T> {
@@ -2385,8 +2385,8 @@ struct Point {
 // but here's the impls if we wrote them out by hand
 impl Ord for Point {
     fn cmp(&self, other: &Self) -> Ordering {
-        match self.x.cmp(&self.y) {
-            Ordering::Equal => self.y.cmp(&self.y),
+        match self.x.cmp(&other.x) {
+            Ordering::Equal => self.y.cmp(&other.y),
             ordering => ordering,
         }
     }
@@ -2836,7 +2836,7 @@ trait DerefMut: Deref {
 }
 ```
 
-`Deref<Target = T>` types can dereferenced to `T` types using the dereference operator `*`. This has obvious use-cases for smart pointer types like `Box` and `Rc`. However, we rarely see the dereference operator explicitly used in Rust code, and that's because of a Rust feature called _deref coercion_.
+`Deref<Target = T>` types can be dereferenced to `T` types using the dereference operator `*`. This has obvious use-cases for smart pointer types like `Box` and `Rc`. However, we rarely see the dereference operator explicitly used in Rust code, and that's because of a Rust feature called _deref coercion_.
 
 Rust automatically dereferences types when they're being passed as function arguments, returned from a function, or used as part of a method call. This is the reason why we can pass `&String` and `&Vec<T>` to functions expecting `&str` and `&[T]` because `String` impls `Deref<Target = str>` and `Vec<T>` impls `Deref<Target = [T]>`.
 
@@ -3152,7 +3152,7 @@ fn main() {
 
 It's kinda confusing at first, because it seems like the `Index` trait does not follow its own method signature, but really it's just questionable syntax sugar.
 
-Since `Idx` is a generic type the `Index` trait can be implemented many times for a given type, and in the case of `Vec<T>` not only can we index into it using `usize` but we can also index into its using `Range<usize>`s to get slices.
+Since `Idx` is a generic type the `Index` trait can be implemented many times for a given type, and in the case of `Vec<T>` not only can we index into it using `usize` but we can also index into it using `Range<usize>`s to get slices.
 
 ```rust
 fn main() {
@@ -5165,8 +5165,9 @@ Discuss this article on
 
 ## Notifications
 
-Get notified when the next blog post get published by
+Get notified when the next article get published by
 - [Following pretzelhammer on Twitter](https://twitter.com/pretzelhammer) or
+- [Subscribing to this repo's release RSS feed](https://github.com/pretzelhammer/rust-blog/releases.atom) or
 - Watching this repo's releases (click `Watch` -> click `Custom` -> select `Releases` -> click `Apply`)
 
 
@@ -5175,6 +5176,7 @@ Get notified when the next blog post get published by
 
 - [Sizedness in Rust](./sizedness-in-rust.md)
 - [Common Rust Lifetime Misconceptions](./common-rust-lifetime-misconceptions.md)
+- [RESTful API in Sync & Async Rust](./restful-api-in-sync-and-async-rust.md)
 - [Learning Rust in 2020](./learning-rust-in-2020.md)
 - [Learn Assembly with Entirely Too Many Brainfuck Compilers](./too-many-brainfuck-compilers.md)
 
